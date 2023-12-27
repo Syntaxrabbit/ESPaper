@@ -65,8 +65,13 @@ for($index = 0; $index < $width * $height / 4; $index++)
 	$bytedataRW[$index + $shift] = $byteRW;
 }
 
+$curlInit = curl_init();
+curl_setopt($curlInit, CURLOPT_CONNECTTIMEOUT, 3); 
+curl_setopt($curlInit, CURLOPT_TIMEOUT, 3);
+
 // start transfer to waveshare firmware's HTTP server
-curl_exec(curl_init("http://" . $esphost . "/EPDx_"));
+curl_setopt($curlInit, CURLOPT_URL, "http://" . $esphost . "/EPDx_");
+curl_exec($curlInit);
 
 // iterate byte arrays
 for($index = 0; $index < $width * $height / 4000; $index++)
@@ -81,11 +86,13 @@ for($index = 0; $index < $width * $height / 4000; $index++)
 	}
 
 	// send 1000 chars to waveshare firmware's HTTP server
-	curl_exec(curl_init("http://" . $esphost . "/" . $data . "iodaLOAD_"));
+	curl_setopt($curlInit, CURLOPT_URL, "http://" . $esphost . "/" . $data . "iodaLOAD_");
+	curl_exec($curlInit);
 }
 
-// switch waveshare firmware to next color channel which is red
-curl_exec(curl_init("http://" . $esphost . "/NEXT_"));
+	// switch waveshare firmware to next color channel which is red
+	curl_setopt($curlInit, CURLOPT_URL, "http://" . $esphost . "/NEXT_");
+        curl_exec($curlInit);
 
 for($index = 0; $index < $width * $height / 4000; $index++)
 {       
@@ -97,13 +104,13 @@ for($index = 0; $index < $width * $height / 4000; $index++)
 		$data .= chr($byte + 97);
 	}
 
-	curl_exec(curl_init("http://" . $esphost . "/" . $data . "iodaLOAD_"));
+	curl_setopt($curlInit, CURLOPT_URL, "http://" . $esphost . "/" . $data . "iodaLOAD_");
+	curl_exec($curlInit);
 }
 
 // finish transfer and show image
-curl_exec(curl_init("http://" . $esphost . "/SHOW_"));
-
-
+curl_setopt($curlInit, CURLOPT_URL, "http://" . $esphost . "/SHOW_");
+curl_exec($curlInit);
 $debug = false;
 
 // output dithered black and red images to disk
